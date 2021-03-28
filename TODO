@@ -1,2 +1,4 @@
 # Add TDM y/n option
 # handle future weeks
+# catch extra pop up in case of double subscribe for sme slot (in case wrong info)
+# handle slots too close in time for satisfied stop
