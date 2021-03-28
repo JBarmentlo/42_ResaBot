@@ -11,7 +11,8 @@ from config import config
 from selenium.webdriver.chrome.options import Options
 
 class Popup():
-    def __init__(self, element):
+    def __init__(self, driver, element):
+        self.driver = driver
         self.element = element
         # self.occupied = self.get_occupied()
         # self.available = self.get_available()
@@ -61,9 +62,9 @@ class Popup():
                 logging.error("Attempting to subscribe to already subscribed button")
                 return False
             self.buttone.click()
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//div[@role='alertdialog']")))
+            WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, "//div[@role='alertdialog']")))
             try:
-                driver.find_element_by_xpath("//div[@class='notices is-bottom']//button").click()
+                self.driver.find_element_by_xpath("//div[@class='notices is-bottom']//button").click()
             except:
                 logging.warn("couldnt click away the confirmation banner")
             return True
@@ -80,9 +81,9 @@ class Popup():
                 logging.error("Attempting to unsubscribe fromnot subscribed button")
                 return False
             self.buttone.click()
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//div[@role='alertdialog']")))
+            WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, "//div[@role='alertdialog']")))
             try:
-                driver.find_element_by_xpath("//div[@class='notices is-bottom']//button").click()
+                self.driver.find_element_by_xpath("//div[@class='notices is-bottom']//button").click()
             except:
                 logging.warn("couldnt click away the confirmation banner")
             return True
@@ -94,7 +95,7 @@ class Popup():
 def catch_popup(driver):
     try:
         WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//div[@class='modal-card-head-banner']//i[@class='mdi mdi-timer default']")))
-        return Popup(driver.find_element_by_xpath("//div[@class='modal-card']"))
+        return Popup(driver, driver.find_element_by_xpath("//div[@class='modal-card']"))
     except Exception as e:
         logging.error(f"Tried to catch unexisting popup. \n {e}")
 
@@ -279,7 +280,8 @@ class Day():
         return (out)
 
 class Week():
-    def __init__(self, agenda):
+    def __init__(self, driver, agenda):
+        self.driver = driver
         self.days = []
         self.agenda = agenda
         self.week_element = self.get_week_days()
@@ -300,7 +302,7 @@ class Week():
 
 
     def get_week_days(self):
-        return driver.find_elements_by_xpath("//div[@class='fc-content-skeleton']//div[@class='fc-event-container']")
+        return self.driver.find_elements_by_xpath("//div[@class='fc-content-skeleton']//div[@class='fc-event-container']")
 
 
     def __str__(self):
@@ -319,7 +321,7 @@ class Agent():
 
 
     def make_week(self):
-        self.week = Week(self.agenda)
+        self.week = Week(self.driver, self.agenda)
 
 
     def login(self, login, psswd):
@@ -331,8 +333,8 @@ class Agent():
         psswd_field.clear()
         psswd_field.send_keys(psswd)
         psswd_field.send_keys(Keys.RETURN)
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//td[@class='fc-widget-content']")))
-        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH ,"//div[@class='fc-content-col']//a")))
+        WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, "//td[@class='fc-widget-content']")))
+        WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH ,"//div[@class='fc-content-col']//a")))
         logging.info("Logged in.")
 
     
