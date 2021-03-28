@@ -8,6 +8,7 @@ from selenium.webdriver import ActionChains
 import logging
 from time import sleep
 from config import config
+from selenium.webdriver.chrome.options import Options
 
 class Popup():
     def __init__(self, element):
@@ -228,6 +229,7 @@ class Slot():
 
     def get_buttons(self):
         try:
+            # return [but for but in filter(lambda b: b.floor in ["E1", "E2"], [Button(self, x) for x in self.day_element.find_elements_by_xpath(f".//a/div/div[@data-start='{self.hour}']/../..")])]
             return [Button(self, x) for x in self.day_element.find_elements_by_xpath(f".//a/div/div[@data-start='{self.hour}']/../..")]
         except Exception as e:
             print(f"no elements found at {self.hour}")
@@ -330,6 +332,7 @@ class Agent():
         psswd_field.send_keys(psswd)
         psswd_field.send_keys(Keys.RETURN)
         WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//td[@class='fc-widget-content']")))
+        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH ,"//div[@class='fc-content-col']//a")))
         logging.info("Logged in.")
 
     
@@ -360,7 +363,7 @@ class Agent():
 
         except Exception as e:
             press_ESC(self.driver)
-			self.make_week()
+            self.make_week()
             logging.error(f"error whilst reserving iteration \n{e}")
         
     def work(self):
@@ -368,12 +371,7 @@ class Agent():
             self.satisfied = True
             self.spam_slots()
 
-logging.basicConfig(level=logging.INFO)
-driver = webdriver.Chrome("./chromedriver_linux")
-wanted = Agenda(sunday_start='17:00', sunday_end='17:00')
-majordomo = Agent(wanted, driver)
-majordomo.login("jbarment", "69@TheEelHouse!")
-majordomo.make_week()
+
 # majordomo.work()
 
 
