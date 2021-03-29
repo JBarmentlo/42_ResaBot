@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, NoSuchWindowException, TimeoutException
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, NoSuchWindowException, TimeoutException, ElementClickInterceptedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 import logging
@@ -93,6 +93,7 @@ class Popup():
 
 
 def catch_popup(driver):
+    logging.info("catching popup")
     try:
         WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//div[@class='modal-card-head-banner']//i[@class='mdi mdi-timer default']")))
         return Popup(driver, driver.find_element_by_xpath("//div[@class='modal-card']"))
@@ -184,7 +185,7 @@ class Button():
         
 
     def refresh(self):
-        logging.info("refreshing but")
+        logging.info("refreshing button")
         try:
             self.element = self.slot.day_element.find_element_by_xpath(f".//a/div/div[@data-start='{self.hour}']/../div[text()='{self.floor}']/../..")
         except StaleElementReferenceException:
@@ -193,10 +194,16 @@ class Button():
 
 
     def click(self):
+        logging.info(f"going to click {str(self)}")
         try:
             self.element.click()
         except StaleElementReferenceException:
             self.refresh()
+            self.click()
+        except ElementClickInterceptedException:
+            logging.info("Scrolling to click button")
+            press_ESC(self.day.week.driver)
+            self.slot.day.week.driver.execute_script("arguments[0].scrollIntoView(true);", self.element)
             self.click()
 
 
@@ -245,7 +252,7 @@ class Slot():
 
 # REFRESH RESERVED VALEUS ??
     def set_reserved(self):
-        reserved = False
+        self.reserved = False
         for but in self.buttons.values():
             if (but.reserved):
                 self.reserved = True
@@ -350,15 +357,16 @@ class Agent():
                     logging.debug(str(slot))
                     if (not slot.reserved):
                         for button in slot.buttons.values():
-                            logging.debug(f"going to click {str(button)}")
                             button.click()
                             popup = catch_popup(self.driver)
                             if (popup.get_occupied() == popup.get_available()):
+                                self.satisfied = False
+                                press_ESC(self.driver)
                                 break
                             if (popup != None):
                                 slot.reserved = popup.subscribe()
-                                slot.reserved_floor = button.floor
                             if (slot.reserved):
+                                slot.reserved_floor = button.floor
                                 break
                             else:
                                 self.satisfied = False
@@ -374,9 +382,6 @@ class Agent():
         while (not self.satisfied):
             self.satisfied = True
             self.spam_slots()
-
-
-
-
-
-
+            logging.debug("Iterated over a week")
+            logging.debug(f"week: {str(self.week)}. satisfied: {self.satisfied}")
+            sleep(1)
