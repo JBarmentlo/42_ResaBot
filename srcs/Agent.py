@@ -230,8 +230,8 @@ class Slot():
 
     def get_buttons(self):
         try:
-            # return [but for but in filter(lambda b: b.floor in ["E1", "E2"], [Button(self, x) for x in self.day_element.find_elements_by_xpath(f".//a/div/div[@data-start='{self.hour}']/../..")])]
-            return [Button(self, x) for x in self.day_element.find_elements_by_xpath(f".//a/div/div[@data-start='{self.hour}']/../..")]
+            return [but for but in filter(lambda b: b.floor in ["E1", "E2"], [Button(self, x) for x in self.day_element.find_elements_by_xpath(f".//a/div/div[@data-start='{self.hour}']/../..")])]
+            # return [Button(self, x) for x in self.day_element.find_elements_by_xpath(f".//a/div/div[@data-start='{self.hour}']/../..")]
         except Exception as e:
             print(f"no elements found at {self.hour}")
             print(e)
@@ -350,9 +350,11 @@ class Agent():
                     logging.debug(str(slot))
                     if (not slot.reserved):
                         for button in slot.buttons.values():
-                            logging.debug(str(button))
+                            logging.debug(f"going to click {str(button)}")
                             button.click()
                             popup = catch_popup(self.driver)
+                            if (popup.get_occupied() == popup.get_available()):
+                                break
                             if (popup != None):
                                 slot.reserved = popup.subscribe()
                                 slot.reserved_floor = button.floor
@@ -374,7 +376,6 @@ class Agent():
             self.spam_slots()
 
 
-# majordomo.work()
 
 
 
