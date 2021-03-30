@@ -33,6 +33,7 @@ def json_to_agenda(json):
             setattr(agenda, day.lower() + "_start", int_to_str(d[1]))
             setattr(agenda, day.lower() + "_end", int_to_str(d[2]))
     agenda.make_array()
+    logging.info(f"Agenda array: {agenda.array}")
     return agenda
 
 
@@ -51,13 +52,14 @@ def loop(cur):
         row = Row(res)
         logging.info(f"going for {str(res)}")
         majordomo = Agent(row.agenda, driver, 5)
+        sleep(10)
         majordomo.login(row.user42, row.pas42)
-        sleep(2)
+        sleep(10)
         majordomo.make_week()
         majordomo.work()
         majordomo.logout()
         driver.close()
-        sleep(60)
+        sleep(20)
 
 if __name__=="__main__":
     logging.info("STARTING APP")
