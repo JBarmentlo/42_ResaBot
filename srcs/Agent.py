@@ -14,13 +14,15 @@ class Popup():
     def __init__(self, driver, element):
         self.driver = driver
         self.element = element
-        # self.occupied = self.get_occupied()
-        # self.available = self.get_available()
+        sleep(0.5)
+        self.occupied = self.get_occupied()
+        self.available = self.get_available()
         self.buttone = self.get_subscribe_button()
         
 
     def get_occupied(self):
         try:
+            WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, "//div[@class='modal-card-head-banner']/span[2]/span[2]")))
             return int(self.element.find_element_by_xpath(".//div[@class='modal-card-head-banner']/span[2]/span[2]").text.split("/")[0])
         except Exception as e:
             logging.error(f"Could not get occupied seats frommodal card.\n {e}")
@@ -29,6 +31,7 @@ class Popup():
 
     def get_available(self):
         try:
+            WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, "//div[@class='modal-card-head-banner']/span[2]/span[2]")))
             return int(self.element.find_element_by_xpath(".//div[@class='modal-card-head-banner']/span[2]/span[2]").text.split("/")[1])
         except Exception as e:
             logging.error(f"Could not get available seats frommodal card.\n {e}")
@@ -350,7 +353,7 @@ class Agent():
 
     
     def logout(self):
-        self.driver.find_elemt_by_xpath("//*[@id='navbar-main']/div[2]/a[2]").click()
+        self.driver.find_element_by_xpath("//*[@id='navbar-main']/div[2]/a[2]").click()
         self.driver.find_element_by_xpath("//span[text()='logout']").click()
     
 
@@ -363,7 +366,7 @@ class Agent():
                         for button in slot.buttons.values():
                             button.click()
                             popup = catch_popup(self.driver)
-                            if (popup.get_occupied() == popup.get_available()):
+                            if (popup.occupied == popup.available):
                                 self.satisfied = False
                                 press_ESC(self.driver)
                                 break

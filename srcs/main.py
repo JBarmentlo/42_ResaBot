@@ -9,9 +9,7 @@ import os
 from Crypto.PublicKey import RSA
 
 logging.basicConfig(level=logging.INFO)
-key = RSA.importKey(os.environ['PRIV'])
 
-day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 def decrypt(cypher):
     return key.decrypt(bytes.fromhex(cypher)).decode('utf-8')
@@ -27,9 +25,15 @@ def int_to_str(time):
     return out
 
 
-def json_to_agend(json):
-    
+def json_to_agenda(json):
+    agenda = Agenda()
     for day in day_names:
+        d = json[day]
+        if (d[0]):
+            setattr(agenda, day.lower() + "_start", int_to_str(d[1]))
+            setattr(agenda, day.lower() + "_end", int_to_str(d[2]))
+    agenda.make_array()
+    return agenda
 
 
 class Row():
@@ -37,36 +41,41 @@ class Row():
         self.agenda_json, self.date, _, _, self.nb_worker, self.stop, self.pas42, self.user42, self.mail = result
         self.pas42 = decrypt(self.pas42)
         self.user42 = decrypt(self.user42)
+        self.agenda = json_to_agenda(self.agenda_json)
 
+def loop(cur):
+    cur.execute('SELECT * FROM results')
+    for res in cur.fetchall():
+        driver = webdriver.Chrome("./drivers/chromedriver_linux", options= chrome_options)
+        row = Row(res)
+        majordomo = Agent(row.agenda, driver, 5)
+        majordomo.login(row.user42, row.pas42)
+        sleep(2)
+        majordomo.make_week()
+        majordomo.work()
+        majordomo.logout()
+        driver.close()
+        sleep(60)
 
-conn = psycopg2.connect(
-    host="ec2-3-233-43-103.compute-1.amazonaws.com",
-    database="d1ulnnkdooqel6",
-    user="hujazqtsmfiylz",
-    password="77a3f43b3a4ec771296738ebc816ec9757e36344aef065a3842e33c804227f31"
-)
+if __name__=="__main__":
+    key = RSA.importKey(os.environ['PRIV'])
+    day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
+    conn = psycopg2.connect(
+        host="ec2-3-233-43-103.compute-1.amazonaws.com",
+        database="d1ulnnkdooqel6",
+        user="hujazqtsmfiylz",
+        password="77a3f43b3a4ec771296738ebc816ec9757e36344aef065a3842e33c804227f31"
+    )
 
-cur = conn.cursor()
-print('PostgreSQL database version:')
-cur.execute('SELECT * FROM results')
-# print(cur.fetchone())
-row = Row(cur.fetchone())
-print(getattr(row, 'agenda_json'))
+    cur = conn.cursor()
+    chrome_options = Options()
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument('window-size=1024×768')
 
-# chrome_options = Options()
-# # chrome_options.add_argument("--headless")
-# chrome_options.add_argument('window-size=1920x1080')
-# # chrome_options.add_argument('window-size=1280x1024')
+    while (True):
+        loop(cur)
+        sleep(1000)
+    driver.close()
 
-# def loop(users):
-
-
-# driver = webdriver.Chrome("./drivers/chromedriver_linux", options= chrome_options)
-# wanted = Agenda(wednesday_start='10:00', wednesday_end='17:00', thursday_start='10:00', thursday_end="17:00", friday_start='10:00', friday_end='17:00')
-# majordomo = Agent(wanted, driver, 10)
-# majordomo.login("jbarment", "69@TheEelHouse!")
-# sleep(2)
-# majordomo.make_week()
-# # majordomo.work()
-# driver.close()
