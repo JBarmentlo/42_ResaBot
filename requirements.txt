@@ -1,0 +1,8 @@
+pkg-resources==0.0.0
+postgres==3.0.0
+psycopg2==2.8.6
+psycopg2-binary==2.8.6
+psycopg2-pool==1.1
+pycrypto==2.6.1
+selenium==3.141.0
+urllib3==1.26.4
