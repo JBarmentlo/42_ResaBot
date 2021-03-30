@@ -41,6 +41,7 @@ class Row():
         self.agenda_json, self.date, _, _, self.nb_worker, self.stop, self.pas42, self.user42, self.mail = result
         self.pas42 = decrypt(self.pas42)
         self.user42 = decrypt(self.user42)
+        logging.info(f"{self.user42}")
         self.agenda = json_to_agenda(self.agenda_json)
 
 def loop(cur):
