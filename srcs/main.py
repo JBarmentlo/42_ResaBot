@@ -59,6 +59,8 @@ def loop(cur):
         sleep(60)
 
 if __name__=="__main__":
+    logging.info("STARTING APP")
+    print("STARTED BABE")
     key = RSA.importKey(os.environ['PRIV'])
     day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
