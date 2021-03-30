@@ -137,14 +137,17 @@ class Agenda():
 
 
     def is_wanted(self, hour, day_nb):
-        return ((hour >= self.array[day_nb][0]) and (hour <= self.array[day_nb][1]))
+        return ((hour >= self.array[day_nb][0]) and (hour < self.array[day_nb][1]))
 
     def get_wanted_times_day(self, day_nb):
         if (self.array[day_nb][0] is None) or (self.array[day_nb][1] is None):
             return []
         return [x for x in filter(lambda x: self.is_wanted(x, day_nb), config.slot_times)]
 
+    def make_array(self):
+        self.array = [[self.monday_start, self.monday_end], [self.tuesday_start, self.tuesday_end], [self.wednesday_start, self.wednesday_end], [self.thursday_start, self.thursday_end], [self.friday_start, self.friday_end], [self.saturday_start, self.saturday_end], [self.sunday_start, self.sunday_end]]
 
+        
 
 class Button():
     def __init__(self, slot, element):
@@ -320,11 +323,12 @@ class Week():
         return (out)
 
 class Agent():
-    def __init__(self, agenda, driver):
+    def __init__(self, agenda, driver, limit):
         self.driver = driver
         self.agenda = agenda
         self.week = None
         self.satisfied = False
+        self.limit = limit
 
 
     def make_week(self):
@@ -379,9 +383,10 @@ class Agent():
             logging.error(f"error whilst reserving iteration \n{e}")
         
     def work(self):
-        while (not self.satisfied):
+        while (self.limit != 0):
             self.satisfied = True
             self.spam_slots()
             logging.debug("Iterated over a week")
             logging.debug(f"week: {str(self.week)}. satisfied: {self.satisfied}")
             sleep(1)
+            self.limit -= 1
