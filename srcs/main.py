@@ -46,8 +46,9 @@ class Row():
 def loop(cur):
     cur.execute('SELECT * FROM results')
     for res in cur.fetchall():
-        driver = webdriver.Chrome("./drivers/chromedriver_linux", options= chrome_options)
+        driver = webdriver.Chrome(options= chrome_options)
         row = Row(res)
+        logging.info(f"going for {str(res)}")
         majordomo = Agent(row.agenda, driver, 5)
         majordomo.login(row.user42, row.pas42)
         sleep(2)
