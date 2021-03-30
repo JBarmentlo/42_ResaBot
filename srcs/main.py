@@ -50,19 +50,17 @@ def loop(cur):
     for res in cur.fetchall():
         driver = webdriver.Chrome(options= chrome_options)
         row = Row(res)
-        logging.info(f"going for {str(res)}")
-        majordomo = Agent(row.agenda, driver, 5)
-        sleep(10)
-        print(driver.page_source)
-        majordomo.login(row.user42, row.pas42)
-        print("\n\n\n\n")
-        sleep(10)
-        print(driver.page_source)
-        majordomo.make_week()
-        majordomo.work()
-        majordomo.logout()
-        driver.close()
-        sleep(20)
+        # logging.info(f"going for {str(res)}")
+        if (row.stop != 1):
+            majordomo = Agent(row.agenda, driver, 5)
+            sleep(10)
+            majordomo.login(row.user42, row.pas42)
+            sleep(10)
+            majordomo.make_week()
+            majordomo.work()
+            majordomo.logout()
+            driver.close()
+            sleep(20)
 
 if __name__=="__main__":
     logging.info("STARTING APP")
@@ -86,6 +84,6 @@ if __name__=="__main__":
 
     while (True):
         loop(cur)
-        sleep(1000)
+        # sleep(1000)
     driver.close()
 
