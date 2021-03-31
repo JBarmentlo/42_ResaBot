@@ -150,6 +150,13 @@ class Agenda():
     def make_array(self):
         self.array = [[self.monday_start, self.monday_end], [self.tuesday_start, self.tuesday_end], [self.wednesday_start, self.wednesday_end], [self.thursday_start, self.thursday_end], [self.friday_start, self.friday_end], [self.saturday_start, self.saturday_end], [self.sunday_start, self.sunday_end]]
 
+    def is_empty(self):
+        for a, b in self.array:
+            if a != None:
+                return (False)
+            if b != None:
+                return (False)
+        return True
         
 
 class Button():

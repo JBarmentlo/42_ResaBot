@@ -54,7 +54,7 @@ def loop(cur):
         driver = webdriver.Chrome(options= chrome_options)
         row = Row(res)
         # logging.info(f"going for {str(res)}")
-        if (row.stop != 1):
+        if (row.stop != 1 and row.agenda != None):
             majordomo = Agent(row.agenda, driver, 5)
             sleep(10)
             # driver.save_screenshot("screenshot1.png")
@@ -90,6 +90,6 @@ if __name__=="__main__":
 
     while (True):
         loop(cur)
-        # sleep(1000)
+        sleep(1000)
     driver.close()
 
