@@ -36,6 +36,7 @@ def json_to_agenda(json):
             setattr(agenda, day.lower() + "_end", int_to_str(d[2]))
     agenda.make_array()
     logging.info(f"Agenda array: {agenda.array}")
+    logging.info(f"json: {json}")
     return agenda
 
 
@@ -54,7 +55,8 @@ def loop(cur):
         driver = webdriver.Chrome(options= chrome_options)
         row = Row(res)
         # logging.info(f"going for {str(res)}")
-        if (row.stop != 1 and row.agenda != None):
+        if (row.stop != 1 and row.agenda != None and (not row.agenda.is_empty())):
+            logging.info("scraping")
             majordomo = Agent(row.agenda, driver, 5)
             sleep(10)
             # driver.save_screenshot("screenshot1.png")
@@ -90,6 +92,6 @@ if __name__=="__main__":
 
     while (True):
         loop(cur)
-        sleep(1000)
+        sleep(10)
     driver.close()
 
