@@ -47,6 +47,7 @@ class Row():
         logging.info(f"{self.user42}")
         self.agenda = json_to_agenda(self.agenda_json)
 
+i = 0
 def loop(cur):
     cur.execute('SELECT * FROM results')
     for res in cur.fetchall():
@@ -56,8 +57,10 @@ def loop(cur):
         if (row.stop != 1):
             majordomo = Agent(row.agenda, driver, 5)
             sleep(10)
+            driver.save_screenshot("screenshot1.png")
             majordomo.login(row.user42, row.pas42)
             sleep(10)
+            driver.save_screenshot("screenshot2.png")
             majordomo.make_week()
             majordomo.work()
             majordomo.logout()
@@ -81,6 +84,7 @@ if __name__=="__main__":
     chrome_options = Options()
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--headless")
     # chrome_options.add_argument('window-size=1024×768')
 
