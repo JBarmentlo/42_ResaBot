@@ -1,1 +1,1 @@
-web: python srcs/main.py
+worker: python srcs/main.py
