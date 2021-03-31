@@ -57,10 +57,10 @@ def loop(cur):
         if (row.stop != 1):
             majordomo = Agent(row.agenda, driver, 5)
             sleep(10)
-            driver.save_screenshot("screenshot1.png")
+            # driver.save_screenshot("screenshot1.png")
             majordomo.login(row.user42, row.pas42)
             sleep(10)
-            driver.save_screenshot("screenshot2.png")
+            # driver.save_screenshot("screenshot2.png")
             majordomo.make_week()
             majordomo.work()
             majordomo.logout()
