@@ -396,6 +396,8 @@ class Agent():
         while (self.limit != 0):
             self.satisfied = True
             self.spam_slots()
+            self.driver.refresh()
+            self.make_week()
             logging.debug("Iterated over a week")
             logging.debug(f"week: {str(self.week)}. satisfied: {self.satisfied}")
             sleep(1)

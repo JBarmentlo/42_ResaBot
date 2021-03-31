@@ -59,7 +59,7 @@ def start_chrome(i = 0):
     except Exception as e:
         logging.error(f"Chromedriver crasher \n{e}")
         start_chrome(i + 1)
-    logging.ino("chrome started")
+    logging.info("chrome started")
     return (driver)
         
 def loop(cur):
