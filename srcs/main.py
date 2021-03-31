@@ -27,6 +27,8 @@ def int_to_str(time):
 
 def json_to_agenda(json):
     agenda = Agenda()
+    if (json is None):
+        return agenda
     for day in day_names:
         d = json[day]
         if (d[0]):
