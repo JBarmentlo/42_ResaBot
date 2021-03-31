@@ -49,10 +49,22 @@ class Row():
         self.agenda = json_to_agenda(self.agenda_json)
 
 i = 0
+
+def start_chrome(i = 0):
+    if (i > 7):
+        logging.error("TOO MANY CHROME CRAHSES")
+        raise MemoryError
+    try:
+        driver = webdriver.Chrome(options= chrome_options)
+    except Exception as e:
+        logging.error(f"Chromedriver crasher \n{e}")
+        start_chrome(i + 1)
+    return (driver)
+        
 def loop(cur):
     cur.execute('SELECT * FROM results')
     for res in cur.fetchall():
-        driver = webdriver.Chrome(options= chrome_options)
+
         row = Row(res)
         # logging.info(f"going for {str(res)}")
         if (row.stop != 1 and row.agenda != None and (not row.agenda.is_empty())):
@@ -92,6 +104,6 @@ if __name__=="__main__":
 
     while (True):
         loop(cur)
-        sleep(10)
+        sleep(1000)
     driver.close()
 
