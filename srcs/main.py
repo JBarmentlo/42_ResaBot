@@ -59,16 +59,17 @@ def start_chrome(i = 0):
     except Exception as e:
         logging.error(f"Chromedriver crasher \n{e}")
         start_chrome(i + 1)
+    logging.ino("chrome started")
     return (driver)
         
 def loop(cur):
     cur.execute('SELECT * FROM results')
     for res in cur.fetchall():
-
         row = Row(res)
         # logging.info(f"going for {str(res)}")
         if (row.stop != 1 and row.agenda != None and (not row.agenda.is_empty())):
             logging.info("scraping")
+            start_chrome()
             majordomo = Agent(row.agenda, driver, 5)
             sleep(10)
             # driver.save_screenshot("screenshot1.png")
